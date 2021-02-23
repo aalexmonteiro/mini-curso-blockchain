@@ -1,0 +1,101 @@
+version: '2'
+
+networks:
+  virgo:
+
+services:
+
+  orderer.energy-credit.com:
+    extends:
+      file: docker-compose-base.yaml
+      service: orderer.energy-credit.com
+    container_name: orderer.energy-credit.com
+    networks:
+      - virgo
+  
+  couchdb0:
+    extends:
+      file: docker-compose-base.yaml
+      service: couchdb0
+    container_name: couchdb0
+    networks:
+      - virgo
+
+  peer0.org1.energy-credit.com:
+    container_name: peer0.org1.energy-credit.com
+    extends:
+      file: docker-compose-base.yaml
+      service: peer0.org1.energy-credit.com
+    networks:
+      - virgo
+    depends_on:
+      - couchdb0
+  
+  couchdb1:
+    extends:
+      file: docker-compose-base.yaml
+      service: couchdb1
+    container_name: couchdb1
+    networks:
+      - virgo
+  
+  peer1.org1.energy-credit.com:
+    container_name: peer1.org1.energy-credit.com
+    extends:
+      file: docker-compose-base.yaml
+      service: peer1.org1.energy-credit.com
+    networks:
+      - virgo
+    depends_on:
+      - couchdb1
+  
+  couchdb2:
+    extends:
+      file: docker-compose-base.yaml
+      service: couchdb2
+    container_name: couchdb2
+    networks:
+      - virgo
+  
+  peer2.org1.energy-credit.com:
+    container_name: peer2.org1.energy-credit.com
+    extends:
+      file: docker-compose-base.yaml
+      service: peer2.org1.energy-credit.com
+    networks:
+      - virgo
+    depends_on:
+      - couchdb2
+
+  cli:
+    container_name: cli
+    image: ${FABRIC_TOOLS_FIXTURE_IMAGE}:${FABRIC_TOOLS_FIXTURE_TAG}
+    tty: true
+    stdin_open: true
+    environment:
+      - SYS_CHANNEL=orderer-credit-channel
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.org1.energy-credit.com:7051
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.energy-credit.com/peers/peer0.org1.energy-credit.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.energy-credit.com/peers/peer0.org1.energy-credit.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.energy-credit.com/peers/peer0.org1.energy-credit.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.energy-credit.com/users/Admin@org1.energy-credit.com/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash -c 'sleep 6000000'
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./app/energy-credit:/opt/gopath/src/github.com/energy-credit
+        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+        - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+    depends_on:
+      - orderer.energy-credit.com
+      - peer0.org1.energy-credit.com
+      - peer1.org1.energy-credit.com
+      - peer2.org1.energy-credit.com
+    networks:
+      - virgo
