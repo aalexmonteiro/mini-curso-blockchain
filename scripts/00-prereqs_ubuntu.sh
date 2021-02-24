@@ -24,7 +24,7 @@
 set -e
 
 # Array of supported versions
-declare -a versions=('trusty' 'xenial' 'yakkety' 'Bionic');
+declare -a versions=('trusty' 'xenial' 'yakkety' 'bionic');
 
 # check the version and extract codename of ubuntu if release codename not provided by user
 if [ -z "$1" ]; then
@@ -104,6 +104,26 @@ fi
 # Install unzip, required to install hyperledger fabric.
 sudo apt-get -y install unzip
 
+# Install the latest version of npm
+echo "# Installing docker"
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+sudo apt update
+apt-cache policy docker-ce
+Y |sudo apt install docker-ce
+sudo systemctl status docker
+sudo usermod -aG docker ${USER}
+echo -e "vagrant\n" | sudo -S su - ${USER}
+id -nG
+
+# Install the latest version of npm
+echo "# Installing docker-compose"
+sudo curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose --version
+
+
 # Print installation details for user
 echo ''
 echo 'Installation completed, versions installed are:'
@@ -118,15 +138,3 @@ echo -n 'Docker Compose: '
 docker-compose --version
 echo -n 'Python:         '
 python -V
-
-# Print reminder of need to logout in order for these changes to take effect!
-echo ''
-echo "Please logout then login before continuing."
-
-echo "Installing Composer tools"
-
-npm install -g composer-cli@0.19.12
-npm install -g generator-hyperledger-composer@0.19.12
-npm install -g composer-rest-server@0.19.12
-npm install -g yo
-npm install -g composer-playground@0.19.12
