@@ -72,7 +72,6 @@ class StateList {
     async getQueryResult(queryString) {
         let resultsIterator = await this.ctx.stub.getQueryResult(queryString);
         let results = await this.getAllResults(resultsIterator);
-        console.log(results);
 
         return results;
       }
@@ -91,7 +90,7 @@ class StateList {
           }
           if (res.done) {
             await iterator.close();
-            console.info(allResults);
+            console.log(allResults);
             return allResults;
           }
         }

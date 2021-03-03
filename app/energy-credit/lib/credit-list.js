@@ -20,10 +20,10 @@ class CreditList extends StateList {
         return this.getState(key);
     }
 
-    async getById(id) {
+    async getByOwner(owner) {
         let queryString = {};
         queryString.selector = {};
-        queryString.selector.id = id;
+        queryString.selector.owner = owner;
         return this.getQueryResult(JSON.stringify(queryString));
     }
 

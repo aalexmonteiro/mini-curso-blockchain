@@ -1,0 +1,22 @@
+#!/bin/bash
+
+DOCKER_NETWORK="energycredit_virgo"
+
+if [ -z "$2" ]; then
+   PORT=8005
+else
+   PORT="$2"
+fi
+
+echo Starting monitoring on all containers on the network ${DOCKER_NETWORK}
+
+docker kill logspout 2> /dev/null 1>&2 || true
+docker rm logspout 2> /dev/null 1>&2 || true
+
+docker run -d --name="logspout" \
+	--volume=/var/run/docker.sock:/var/run/docker.sock \
+	--publish=127.0.0.1:${PORT}:80 \
+	--network  ${DOCKER_NETWORK} \
+	gliderlabs/logspout
+sleep 3
+curl http://127.0.0.1:${PORT}/logs

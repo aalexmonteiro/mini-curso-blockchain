@@ -18,8 +18,6 @@ class CreditMarketplaceContext extends Context {
     constructor() {
         super();
         this.creditList = new CreditList(this);
-        this.paymentList = new PaymentList(this);
-        this.walletList = new WalletList(this);
     }
 }
 
@@ -51,20 +49,31 @@ class CreditMarketplaceContract extends Contract {
     }
 
     async creditRegistration(ctx, payload) {
+        let uuid = uuidv4();
+        let obj = JSON.parse(payload);
+        console.log(obj);
+        let credit = Credit.createInstance(uuid, payload.owner, payload.credit);
 
+        await ctx.creditList.add(credit);
+
+        return credit;
         
     }
 
     async getCredit(ctx, payload) {
+        let obj = JSON.parse(payload);
+        let credit = await ctx.creditList.get(obj.id);
         
-        
+        return credit;
     }
 
-    async updateCredit(ctx, payload) {
+    async getbyOwner(ctx, payload) {
+        let obj = JSON.parse(payload);
+        let res = await ctx.creditList.getByOwner(obj.owner);
+        let credit = Credit.fromBuffer(res[0]);
 
-        
+        return credit;
     }
-
 }
 
 module.exports = CreditMarketplaceContract;
