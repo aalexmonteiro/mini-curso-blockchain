@@ -52,7 +52,7 @@ class CreditMarketplaceContract extends Contract {
         let uuid = uuidv4();
         let obj = JSON.parse(payload);
         console.log(obj);
-        let credit = Credit.createInstance(uuid, payload.owner, payload.credit);
+        let credit = Credit.createInstance(uuid, obj.owner, obj.credit);
 
         await ctx.creditList.add(credit);
 

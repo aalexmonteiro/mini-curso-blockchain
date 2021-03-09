@@ -30,7 +30,7 @@ echo echo "Pulling the Fabric CouchDB"
 docker pull hyperledger/fabric-couchdb:0.4.22
 
 echo echo "Pulling the Fabric JavaEnv"
-docker pull hyperledger/fabric-javaenv:1.4.3
+# docker pull hyperledger/fabric-javaenv:1.4.3
 
 echo echo "Pulling the Fabric CA"
 docker pull hyperledger/fabric-ca:1.4.3
